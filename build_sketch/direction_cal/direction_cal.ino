@@ -37,6 +37,8 @@ float readSensor(int trig, int echo) {
   return dur * 0.01716;
 }
 
+unsigned long lastPrintTime = 0;
+
 void loop() {
   float L = readSensor(TRIG_L, ECHO_L);
   float R = readSensor(TRIG_R, ECHO_R);
@@ -70,8 +72,13 @@ void loop() {
     digitalWrite(RED_LED, HIGH);
   }
 
-  // Only print if at least one sensor sees something within range
-  if (L <= PRINT_FLOOR || R <= PRINT_FLOOR) {
+  // Print if at least one sensor sees something within range
+  // OR if we haven't printed in 3 seconds (to avoid complete silence)
+  unsigned long currentTime = millis();
+  if ((L <= PRINT_FLOOR || R <= PRINT_FLOOR) || (currentTime - lastPrintTime >= 3000)) {
+    if (currentTime - lastPrintTime >= 3000) {
+      lastPrintTime = currentTime;
+    }
     Serial.print(millis()); Serial.print(F("   "));
     Serial.print(L, 1);     Serial.print(F("   "));
     Serial.print(R, 1);     Serial.print(F("   "));
