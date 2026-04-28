@@ -1,0 +1,12 @@
+SONAR DATA ANALYSIS RESULTS
+Data points: 402
+Time range: 02ms to 472558ms
+
+Original (-20/20):
+  Transitions: 20
+Hysteresis (-30/-10):
+  Transitions: 20
+Hysteresis (-25/-15):
+  Transitions: 20
+Hysteresis (-35/-5):
+  Transitions: 18

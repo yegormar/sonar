@@ -172,7 +172,11 @@ LEDs provide immediate visual confirmation of system state, useful for debugging
 
 ## Output Devices
 
-### Buzzer
+### Buzzer Active
+- GND → J33
+- SIGNAL → D3 (J35)
+
+### Buzzer Passive
 - GND → A33
 - SIGNAL → D6 (A35)
 

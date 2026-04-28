@@ -1,0 +1,214 @@
+DETAILED MODEL ANALYSIS
+Original data: 402 points, 2-472558ms
+
+
+Simple(20):
+  Transitions: 20
+  Flicker periods: 13
+  Flicker time: 917.0ms
+  State distribution:
+    CENTER: 449685.0ms
+    LEFT: 17852.0ms
+    RIGHT: 0.0ms
+
+Simple(25):
+  Transitions: 20
+  Flicker periods: 13
+  Flicker time: 917.0ms
+  State distribution:
+    CENTER: 449685.0ms
+    LEFT: 17852.0ms
+
+Simple(30):
+  Transitions: 20
+  Flicker periods: 13
+  Flicker time: 917.0ms
+  State distribution:
+    CENTER: 449685.0ms
+    LEFT: 17852.0ms
+
+Hyst(-30/-10):
+  Transitions: 20
+  Flicker periods: 13
+  Flicker time: 917.0ms
+  State distribution:
+    CENTER: 449685.0ms
+    LEFT: 17852.0ms
+
+Hyst(-25/-15):
+  Transitions: 20
+  Flicker periods: 13
+  Flicker time: 917.0ms
+  State distribution:
+    CENTER: 449685.0ms
+    LEFT: 17852.0ms
+
+Hyst(-35/-5):
+  Transitions: 18
+  Flicker periods: 11
+  Flicker time: 1045.0ms
+  State distribution:
+    CENTER: 449813.0ms
+    LEFT: 17852.0ms
+
+Hyst(-40/-20):
+  Transitions: 18
+  Flicker periods: 11
+  Flicker time: 1045.0ms
+  State distribution:
+    CENTER: 449813.0ms
+    LEFT: 17852.0ms
+
+MovAvg(3,20):
+  Transitions: 9
+  Flicker periods: 4
+  Flicker time: 775.0ms
+  State distribution:
+    CENTER: 449697.0ms
+    LEFT: 21417.0ms
+  Stable periods:
+    2-442335ms: CENTER (442333.0ms)
+    443244-458739ms: LEFT (15495.0ms)
+    458801-458865ms: CENTER (64.0ms)
+    458938-459060ms: LEFT (122.0ms)
+    459124-460916ms: CENTER (1792.0ms)
+    460982-461876ms: LEFT (894.0ms)
+    461939-467118ms: CENTER (5179.0ms)
+    467183-467443ms: LEFT (260.0ms)
+    467509-467838ms: CENTER (329.0ms)
+    467912-472558ms: LEFT (4646.0ms)
+
+MovAvg(5,20):
+  Transitions: 7
+  Flicker periods: 2
+  Flicker time: 524.0ms
+  State distribution:
+    CENTER: 449439.0ms
+    LEFT: 21808.0ms
+  Stable periods:
+    2-442335ms: CENTER (442333.0ms)
+    443244-459189ms: LEFT (15945.0ms)
+    459253-460916ms: CENTER (1663.0ms)
+    460982-461939ms: LEFT (957.0ms)
+    462004-467183ms: CENTER (5179.0ms)
+    467249-467509ms: LEFT (260.0ms)
+    467574-467838ms: CENTER (264.0ms)
+    467912-472558ms: LEFT (4646.0ms)
+
+MovAvg(7,20):
+  Transitions: 7
+  Flicker periods: 2
+  Flicker time: 526.0ms
+  State distribution:
+    CENTER: 450023.0ms
+    LEFT: 22121.0ms
+  Stable periods:
+    2-443244ms: CENTER (443242.0ms)
+    443260-459253ms: LEFT (15993.0ms)
+    459318-460982ms: CENTER (1664.0ms)
+    461047-462069ms: LEFT (1022.0ms)
+    462132-467183ms: CENTER (5051.0ms)
+    467249-467709ms: LEFT (460.0ms)
+    467772-467838ms: CENTER (66.0ms)
+    467912-472558ms: LEFT (4646.0ms)
+
+MovAvg(5,25):
+  Transitions: 7
+  Flicker periods: 2
+  Flicker time: 524.0ms
+  State distribution:
+    CENTER: 449505.0ms
+    LEFT: 21743.0ms
+  Stable periods:
+    2-442335ms: CENTER (442333.0ms)
+    443244-459189ms: LEFT (15945.0ms)
+    459253-460982ms: CENTER (1729.0ms)
+    461047-461939ms: LEFT (892.0ms)
+    462004-467183ms: CENTER (5179.0ms)
+    467249-467509ms: LEFT (260.0ms)
+    467574-467838ms: CENTER (264.0ms)
+    467912-472558ms: LEFT (4646.0ms)
+
+TimeSmooth(200ms):
+  Transitions: 5
+  Flicker periods: 0
+  Flicker time: 0.0ms
+  State distribution:
+    CENTER: 451562.0ms
+    LEFT: 20668.0ms
+  Stable periods:
+    2-443728ms: CENTER (443726.0ms)
+    443794-459516ms: LEFT (15722.0ms)
+    459583-461434ms: CENTER (1851.0ms)
+    461497-462396ms: LEFT (899.0ms)
+    462462-468447ms: CENTER (5985.0ms)
+    468511-472558ms: LEFT (4047.0ms)
+
+TimeSmooth(300ms):
+  Transitions: 5
+  Flicker periods: 0
+  Flicker time: 0.0ms
+  State distribution:
+    CENTER: 451867.0ms
+    LEFT: 20364.0ms
+  Stable periods:
+    2-444056ms: CENTER (444054.0ms)
+    444122-459849ms: LEFT (15727.0ms)
+    459916-461751ms: CENTER (1835.0ms)
+    461814-462729ms: LEFT (915.0ms)
+    462795-468773ms: CENTER (5978.0ms)
+    468836-472558ms: LEFT (3722.0ms)
+
+TimeSmooth(500ms):
+  Transitions: 3
+  Flicker periods: 0
+  Flicker time: 0.0ms
+  State distribution:
+    CENTER: 453553.0ms
+    LEFT: 18806.0ms
+  Stable periods:
+    2-444710ms: CENTER (444708.0ms)
+    444776-460515ms: LEFT (15739.0ms)
+    460581-469426ms: CENTER (8845.0ms)
+    469491-472558ms: LEFT (3067.0ms)
+
+Combined(avg3,hyst-30/-10,time200ms):
+  Transitions: 5
+  Flicker periods: 0
+  Flicker time: 0.0ms
+  State distribution:
+    CENTER: 451358.0ms
+    LEFT: 20871.0ms
+  Stable periods:
+    2-443728ms: CENTER (443726.0ms)
+    443794-459650ms: LEFT (15856.0ms)
+    459716-461497ms: CENTER (1781.0ms)
+    461561-462529ms: LEFT (968.0ms)
+    462596-468447ms: CENTER (5851.0ms)
+    468511-472558ms: LEFT (4047.0ms)
+
+Combined(avg5,hyst-30/-10,time300ms):
+  Transitions: 3
+  Flicker periods: 0
+  Flicker time: 0.0ms
+  State distribution:
+    CENTER: 452711.0ms
+    LEFT: 19650.0ms
+  Stable periods:
+    2-444122ms: CENTER (444120.0ms)
+    444187-460115ms: LEFT (15928.0ms)
+    460182-468773ms: CENTER (8591.0ms)
+    468836-472558ms: LEFT (3722.0ms)
+
+Combined(avg5,hyst-35/-10,time300ms):
+  Transitions: 3
+  Flicker periods: 0
+  Flicker time: 0.0ms
+  State distribution:
+    CENTER: 452711.0ms
+    LEFT: 19650.0ms
+  Stable periods:
+    2-444122ms: CENTER (444120.0ms)
+    444187-460115ms: LEFT (15928.0ms)
+    460182-468773ms: CENTER (8591.0ms)
+    468836-472558ms: LEFT (3722.0ms)
