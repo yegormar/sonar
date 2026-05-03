@@ -119,6 +119,17 @@ upload_clean_arduino: upload
 compile_clean_arduino: SKETCH_NAME = clean_upload
 compile_clean_arduino: compile
 
+upload_freq_test:
+	mkdir -p build_sketch/frequency_test
+	cp tools/frequency_test.ino build_sketch/frequency_test/frequency_test.ino
+	arduino-cli compile --fqbn $(BOARD) build_sketch/frequency_test
+	arduino-cli upload --port $(PORT) --fqbn $(BOARD) build_sketch/frequency_test
+
+compile_freq_test:
+	mkdir -p build_sketch/frequency_test
+	cp tools/frequency_test.ino build_sketch/frequency_test/frequency_test.ino
+	arduino-cli compile --fqbn $(BOARD) build_sketch/frequency_test
+
 clear: upload_clean_arduino
 
 .PHONY: all compile upload clean clear

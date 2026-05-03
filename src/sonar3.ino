@@ -5,9 +5,9 @@
 // ============================================================
 
 // === CALIBRATION CONSTANTS ===
-const float CAL_NEAR       = 42.94;
-const float CAL_FAR        = 130.0;   // set below back-wall distance
-const float CENTER_THRESHOLD_PCT = 0.10; // 10% threshold for center detection
+const float CAL_NEAR       = 40.0;
+const float CAL_FAR        = 200.0;   // set below back-wall distance
+const float CENTER_THRESHOLD_PCT = 0.20; // 10% threshold for center detection
 
 // === DEBUG CONFIGURATION ===
 #define DEBUG_ENABLED 1  // Set to 0 to disable debug output
@@ -24,8 +24,8 @@ const int RED_LED = 4;         // Right indicator
 const int BLUE_LED = 5;        // Left indicator
 
 // --- Parameters ---
-const int SAMPLES = 2;
-const int DEBOUNCE_COUNT = 3;    // Require 3 consecutive consistent readings
+const int SAMPLES = 1;
+const int DEBOUNCE_COUNT = 2;    // Require 3 consecutive consistent readings
 
 // --- Active buzzer state (proximity beeping) ---
 unsigned long lastActiveBeepTime = 0;
@@ -58,7 +58,8 @@ void setup() {
 
 #if DEBUG_ENABLED
   Serial.begin(DEBUG_SERIAL_BAUD);
-  while (!Serial); // Wait for serial monitor to open
+  // Short delay to allow serial to initialize, but don't block forever
+  delay(100);
   Serial.println(F("Sonar3 Debug - Timestamp, DL, DR, Direction"));
 #endif
 }
@@ -146,14 +147,24 @@ void calculateSpatialFeedback(float L, float R) {
     return;
   }
 
-  // --- Active Buzzer: Proximity beeping (REAL-TIME, NO DEBOUNCE) ---
-  if (proximity <= CAL_NEAR) {
-    currentActiveBeepInterval = 100; // Fast beeping
-  } else {
-    float range = CAL_FAR - CAL_NEAR;
-    float pct = (proximity - CAL_NEAR) / range;
-    currentActiveBeepInterval = map(pct * 100, 0, 100, 100, 1000);
-  }
+  // --- Active Buzzer: Improved Proximity beeping (LINEAR RESPONSE) ---
+  // Calculate beep interval based on proximity with better linear feel
+  float normalizedProximity = constrain(proximity, CAL_NEAR, CAL_FAR);
+  
+  // Linear mapping: closer = faster beeping (100ms to 1000ms interval)
+  // Using logarithmic scaling for more natural perception
+  float proximityRatio = (CAL_FAR - normalizedProximity) / (CAL_FAR - CAL_NEAR);
+  
+  // Exponential mapping for more linear human perception
+  // This makes the transition from fast to slow beeping feel more natural
+  float perceivedIntensity = pow(proximityRatio, 1.5);
+  
+  // Map to beep interval (100ms = very close, 1000ms = far but still active)
+  currentActiveBeepInterval = 100 + (900 * (1.0 - perceivedIntensity));
+  
+  // Ensure we stay within bounds
+  currentActiveBeepInterval = constrain(currentActiveBeepInterval, 100, 1000);
+  
   activeBuzzerEnabled = true;
 
   // --- Debounced Direction Detection ---
@@ -181,18 +192,20 @@ void calculateSpatialFeedback(float L, float R) {
   
   // Apply the stable debounced state
   if (currentState == STATE_CENTER) {
-    currentPassiveFrequency = 500; // Low pitch for center
+    currentPassiveFrequency = 100; // Low pitch tone for center (100Hz)
     passiveBuzzerEnabled = true;
     digitalWrite(RED_LED, HIGH);
     digitalWrite(BLUE_LED, HIGH);
   } else if (currentState == STATE_LEFT) {
-    currentPassiveFrequency = 1500; // High pitch for left
-    passiveBuzzerEnabled = true;
+    // No tone for left/right, only LEDs
+    noTone(BUZZER_PASSIVE);
+    passiveBuzzerEnabled = false;
     digitalWrite(RED_LED, LOW);
     digitalWrite(BLUE_LED, HIGH);
   } else if (currentState == STATE_RIGHT) {
-    currentPassiveFrequency = 1500; // High pitch for right
-    passiveBuzzerEnabled = true;
+    // No tone for left/right, only LEDs
+    noTone(BUZZER_PASSIVE);
+    passiveBuzzerEnabled = false;
     digitalWrite(RED_LED, HIGH);
     digitalWrite(BLUE_LED, LOW);
   } else {
@@ -205,7 +218,7 @@ void calculateSpatialFeedback(float L, float R) {
 }
 
 // ============================================================
-// Non-blocking active buzzer update (simple digital HIGH/LOW)
+// Non-blocking active buzzer update with precise timing
 void updateActiveBuzzer() {
   if (!activeBuzzerEnabled) {
     digitalWrite(BUZZER_ACTIVE, LOW);
@@ -213,15 +226,18 @@ void updateActiveBuzzer() {
   }
 
   unsigned long now = millis();
+  unsigned long timeSinceLastBeep = now - lastActiveBeepTime;
   
-  // Turn on buzzer at interval
-  if (now - lastActiveBeepTime >= (unsigned long)currentActiveBeepInterval) {
+  // Beep cycle: ON for 30ms, then OFF until next interval
+  if (timeSinceLastBeep < 30) {
+    // Keep buzzer ON for first 30ms of each beep cycle
+    digitalWrite(BUZZER_ACTIVE, HIGH);
+  } else if (timeSinceLastBeep >= currentActiveBeepInterval) {
+    // Time for next beep - reset timer
     lastActiveBeepTime = now;
     digitalWrite(BUZZER_ACTIVE, HIGH);
-  }
-  
-  // Turn off after 50ms beep duration
-  if (now - lastActiveBeepTime >= 50) {
+  } else {
+    // Keep buzzer OFF between beeps
     digitalWrite(BUZZER_ACTIVE, LOW);
   }
 }
@@ -246,9 +262,10 @@ void loop() {
   calculateSpatialFeedback(leftDist, rightDist);
   
 #if DEBUG_ENABLED
-  // Debug output - only when object is within range
+  // Debug output - show both raw and debounced data
   float proximity = min(leftDist, rightDist);
   if (leftDist > 0 && rightDist > 0 && proximity <= CAL_FAR) {
+    // Raw measurement (every cycle)
     Serial.print(millis());
     Serial.print(F(","));
     Serial.print(leftDist, 1);
@@ -256,14 +273,28 @@ void loop() {
     Serial.print(rightDist, 1);
     Serial.print(F(","));
     
-    if (currentState == STATE_CENTER) {
-      Serial.println(F("CENTER"));
-    } else if (currentState == STATE_LEFT) {
-      Serial.println(F("LEFT"));
-    } else if (currentState == STATE_RIGHT) {
-      Serial.println(F("RIGHT"));
+    // Show detected vs debounced state
+    if (isObjectCentered(leftDist, rightDist)) {
+      Serial.print(F("RAW_CENTER"));
+    } else if (isObjectLeft(leftDist, rightDist)) {
+      Serial.print(F("RAW_LEFT"));
+    } else if (isObjectRight(leftDist, rightDist)) {
+      Serial.print(F("RAW_RIGHT"));
     } else {
-      Serial.println(F("UNKNOWN"));
+      Serial.print(F("RAW_UNKNOWN"));
+    }
+    
+    Serial.print(F(","));
+    
+    // Debounced state (stable)
+    if (currentState == STATE_CENTER) {
+      Serial.println(F("DEBOUNCED_CENTER"));
+    } else if (currentState == STATE_LEFT) {
+      Serial.println(F("DEBOUNCED_LEFT"));
+    } else if (currentState == STATE_RIGHT) {
+      Serial.println(F("DEBOUNCED_RIGHT"));
+    } else {
+      Serial.println(F("DEBOUNCED_UNKNOWN"));
     }
   }
 #endif
