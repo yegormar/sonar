@@ -1,19 +1,17 @@
-# Makefile for Arduino LED blink project (using .ino)
+# Makefile for Sonar Project (3 active sketches)
+# Active sketches: sonar3 (default), direction_v2_recommended, sonar3_clean
+# Archived sketches moved to src/archive/
+
 BOARD      = arduino:avr:uno
 PORT       = /dev/ttyACM0
 SKETCH_DIR = build_sketch
-SKETCH_NAME = sonar_main
+SKETCH_NAME ?= sonar3
 
-# The source .ino file
-# Allow overriding sketch name: make SKETCH_NAME=sonar2 upload
-# Special case for direction_cal_v2: make SKETCH_NAME=direction_cal_v2 upload
-SKETCH_NAME   ?= sonar_main
-SRC_INO       = src/$(SKETCH_NAME).ino
-
-# Target folder for compilation (must match sketch name)
+SRC_INO    = src/$(SKETCH_NAME).ino
 SKETCH_FOLDER = $(SKETCH_DIR)/$(SKETCH_NAME)
 SKETCH_FILE   = $(SKETCH_FOLDER)/$(SKETCH_NAME).ino
 
+# --- Default target ---
 all: upload
 
 $(SKETCH_FILE): $(SRC_INO)
@@ -26,110 +24,34 @@ compile: $(SKETCH_FILE)
 upload: compile
 	arduino-cli upload --port $(PORT) --fqbn $(BOARD) $(SKETCH_FOLDER)
 
-upload2: SKETCH_NAME = sonar2
-upload2: upload
-	
-compile2: SKETCH_NAME = sonar2
-compile2: compile
-
-upload_v2: SKETCH_NAME = direction_cal_v2
-upload_v2: upload
-	
-compile_v2: SKETCH_NAME = direction_cal_v2
-compile_v2: compile
-
-upload_v3: SKETCH_NAME = direction_cal_v3
-upload_v3: upload
-	
-compile_v3: SKETCH_NAME = direction_cal_v3
-compile_v3: compile
-
-upload_v4: SKETCH_NAME = direction_cal_v4
-upload_v4: upload
-	
-compile_v4: SKETCH_NAME = direction_cal_v4
-compile_v4: compile
-
-upload_v5: SKETCH_NAME = direction_cal_v5
-upload_v5: upload
-	
-compile_v5: SKETCH_NAME = direction_cal_v5
-compile_v5: compile
-
-upload_final: SKETCH_NAME = direction_final
-upload_final: upload
-	
-compile_final: SKETCH_NAME = direction_final
-compile_final: compile
-
+# --- sonar3 (default product sketch) ---
+.PHONY: upload_sonar3 compile_sonar3
 upload_sonar3: SKETCH_NAME = sonar3
 upload_sonar3: upload
 
-    compile_sonar3: SKETCH_NAME = sonar3
+compile_sonar3: SKETCH_NAME = sonar3
 compile_sonar3: compile
 
-upload_smooth: SKETCH_NAME = direction_smooth
-upload_smooth: upload
-	
-compile_smooth: SKETCH_NAME = direction_smooth
-compile_smooth: compile
+# --- direction_v2_recommended (direction test with Kalman filter) ---
+.PHONY: upload_direction compile_direction
+upload_direction: SKETCH_NAME = direction_v2_recommended
+upload_direction: upload
 
-upload_working: SKETCH_NAME = direction_working
-upload_working: upload
-	
-compile_working: SKETCH_NAME = direction_working
-compile_working: compile
+compile_direction: SKETCH_NAME = direction_v2_recommended
+compile_direction: compile
 
-upload_clean: SKETCH_NAME = direction_clean
+# --- sonar3_clean (cleaned up version) ---
+.PHONY: upload_clean compile_clean
+upload_clean: SKETCH_NAME = sonar3_clean
 upload_clean: upload
-	
-compile_clean: SKETCH_NAME = direction_clean
+
+compile_clean: SKETCH_NAME = sonar3_clean
 compile_clean: compile
 
-upload_kalman: SKETCH_NAME = direction_kalman
-upload_kalman: upload
-	
-compile_kalman: SKETCH_NAME = direction_kalman
-compile_kalman: compile
-
-upload_robust: SKETCH_NAME = direction_robust
-upload_robust: upload
-	
-compile_robust: SKETCH_NAME = direction_robust
-compile_robust: compile
-
-upload_fixed: SKETCH_NAME = direction_fixed
-upload_fixed: upload
-	
-compile_fixed: SKETCH_NAME = direction_fixed
-compile_fixed: compile
-
-upload_large: SKETCH_NAME = direction_large
-upload_large: upload
-	
-compile_large: SKETCH_NAME = direction_large
-compile_large: compile
-
+# --- Utility targets ---
 clean:
 	rm -rf $(SKETCH_DIR)
 
-upload_clean_arduino: SKETCH_NAME = clean_upload
-upload_clean_arduino: upload
-
-compile_clean_arduino: SKETCH_NAME = clean_upload
-compile_clean_arduino: compile
-
-upload_freq_test:
-	mkdir -p build_sketch/frequency_test
-	cp tools/frequency_test.ino build_sketch/frequency_test/frequency_test.ino
-	arduino-cli compile --fqbn $(BOARD) build_sketch/frequency_test
-	arduino-cli upload --port $(PORT) --fqbn $(BOARD) build_sketch/frequency_test
-
-compile_freq_test:
-	mkdir -p build_sketch/frequency_test
-	cp tools/frequency_test.ino build_sketch/frequency_test/frequency_test.ino
-	arduino-cli compile --fqbn $(BOARD) build_sketch/frequency_test
-
-clear: upload_clean_arduino
+clear: clean
 
 .PHONY: all compile upload clean clear
