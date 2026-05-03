@@ -175,10 +175,12 @@ LEDs provide immediate visual confirmation of system state, useful for debugging
 ### Buzzer Active
 - GND → J33
 - SIGNAL → D3 (J35)
+- **Function:** Proximity beeper (distance urgency)
 
 ### Buzzer Passive
 - GND → A33
 - SIGNAL → D6 (A35)
+- **Function:** Center indicator (target aligned in front)
 
 ### Red LED (Right indicator)
 - GND → A35
@@ -274,7 +276,8 @@ LEDs provide immediate visual confirmation of system state, useful for debugging
 
 - Add hysteresis to stabilize direction switching
 - Add calibration mode for environment setup
-- Add vibration motor for tactile feedback
+- Add stereo directional output for headphones/earbuds (left/right cueing)
+- Add left/right vibration modules for tactile directional feedback
 - Add OLED display for debugging raw distances and computed angle
 
 ---
